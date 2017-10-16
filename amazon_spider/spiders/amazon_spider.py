@@ -10,10 +10,15 @@ class AmazonSpider(scrapy.Spider):
 
     def parse(self, response):
         for item in response.css('div.s-item-container'):
-          yield {
-            'name' : item.css('a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal::attr(title)').extract_first(),
-            'description': item.css('a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal::attr(href)').extract_first(),
-            'price': ''.join(item.css('span.a-size-base.a-color-price.s-price.a-text-bold::text').extract()),
-            'image' : item.css('img.s-access-image.cfMarker::attr(src)').extract_first(),
-          }  
+            name = item.css('a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal::attr(title)').extract_first()
+            description = item.css('a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal::attr(href)').extract_first()
+            price = ''.join(item.css('span.a-size-base.a-color-price.s-price.a-text-bold::text').extract())
+            image = item.css('img.s-access-image.cfMarker::attr(src)').extract_first()
+            if(name is not None):
+                yield {
+                    'name': name,
+                    'description': description,
+                    'price': price, 
+                    'image': image,
+                }  
         self.log('Done')
