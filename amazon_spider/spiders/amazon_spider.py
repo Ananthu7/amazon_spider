@@ -21,4 +21,10 @@ class AmazonSpider(scrapy.Spider):
                     'price': price, 
                     'image': image,
                 }  
-        self.log('Done')
+
+
+        relativeNextPageUrl  = response.css('a.pagnNext::attr(href)').extract_first()
+        if(relativeNextPageUrl is not None):
+            absoulteNextPageUrl = response.urljoin(relativeNextPageUrl);
+            yield scrapy.Request(url=absoulteNextPageUrl, callback=self.parse)
+        self.log("done")
