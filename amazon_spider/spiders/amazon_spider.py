@@ -9,8 +9,11 @@ class AmazonSpider(scrapy.Spider):
         yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        filename = 'quotes-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
+        for item in response.css('div.s-item-container'):
+          yield {
+            'name' : item.css('a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal::attr(title)').extract_first(),
+            'description': item.css('a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal::attr(href)').extract_first(),
+            'price': ''.join(item.css('span.a-size-base.a-color-price.s-price.a-text-bold::text').extract()),
+            'image' : item.css('img.s-access-image.cfMarker::attr(src)').extract_first(),
+          }  
+        self.log('Done')
